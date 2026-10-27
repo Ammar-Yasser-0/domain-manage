@@ -1,0 +1,9 @@
+node_modules
+dist
+.vercel
+coverage
+.env
+.env.*
+!.env.example
+.npmrc
+npm-debug.log*
