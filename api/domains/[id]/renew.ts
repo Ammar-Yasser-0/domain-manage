@@ -1,12 +1,12 @@
-import { validateRenewalYears } from "../../../src/lib/domain-validation";
-import { renewDomain } from "../../../src/server/domains";
+import { validateRenewalYears } from "../../../src/lib/domain-validation.js";
+import { renewDomain } from "../../../src/server/domains.js";
 import {
   ApiError,
   jsonResponse,
   methodNotAllowed,
   readJson,
-} from "../../../src/server/http";
-import { withAuthenticatedApi } from "../../../src/server/auth";
+} from "../../../src/server/http.js";
+import { withAuthenticatedApi } from "../../../src/server/auth.js";
 
 async function handler(request: Request): Promise<Response> {
   if (request.method !== "POST") {

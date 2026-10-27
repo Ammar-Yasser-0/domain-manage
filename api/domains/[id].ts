@@ -1,12 +1,12 @@
-import { validateDomainInput } from "../../src/lib/domain-validation";
-import { deleteDomain, updateDomain } from "../../src/server/domains";
+import { validateDomainInput } from "../../src/lib/domain-validation.js";
+import { deleteDomain, updateDomain } from "../../src/server/domains.js";
 import {
   ApiError,
   jsonResponse,
   methodNotAllowed,
   readJson,
-} from "../../src/server/http";
-import { withAuthenticatedApi } from "../../src/server/auth";
+} from "../../src/server/http.js";
+import { withAuthenticatedApi } from "../../src/server/auth.js";
 
 async function handler(request: Request): Promise<Response> {
   const id = getDomainId(request);

@@ -1,10 +1,10 @@
-import { listRenewalHistory } from "../../../src/server/domains";
+import { listRenewalHistory } from "../../../src/server/domains.js";
 import {
   ApiError,
   jsonResponse,
   methodNotAllowed,
-} from "../../../src/server/http";
-import { withAuthenticatedApi } from "../../../src/server/auth";
+} from "../../../src/server/http.js";
+import { withAuthenticatedApi } from "../../../src/server/auth.js";
 
 async function handler(request: Request): Promise<Response> {
   if (request.method !== "GET") {

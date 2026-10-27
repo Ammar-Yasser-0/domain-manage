@@ -4,8 +4,8 @@ import type {
   RenewalMutationResponse,
   RenewalRecord,
 } from "../types/domain";
-import { ApiError } from "./http";
-import { getSql } from "./db";
+import { ApiError } from "./http.js";
+import { getSql } from "./db.js";
 
 interface DbDomain {
   id: string;

@@ -4,15 +4,15 @@ import {
   getAuthConfiguration,
   sessionCookie,
   verifyPassword,
-} from "../../src/server/auth";
-import { recordLoginAttempt } from "../../src/server/login-rate-limit";
+} from "../../src/server/auth.js";
+import { recordLoginAttempt } from "../../src/server/login-rate-limit.js";
 import {
   ApiError,
   jsonResponse,
   methodNotAllowed,
   readJson,
   withApiErrors,
-} from "../../src/server/http";
+} from "../../src/server/http.js";
 
 async function handler(request: Request): Promise<Response> {
   if (request.method !== "POST") {

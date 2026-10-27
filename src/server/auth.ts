@@ -4,7 +4,7 @@ import {
   scrypt,
   timingSafeEqual,
 } from "node:crypto";
-import { ApiError, withApiErrors } from "./http";
+import { ApiError, withApiErrors } from "./http.js";
 
 export const SESSION_LIFETIME_SECONDS = 7 * 24 * 60 * 60;
 

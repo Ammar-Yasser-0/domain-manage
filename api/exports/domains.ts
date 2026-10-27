@@ -1,7 +1,7 @@
-import { getCairoToday, getDomainDateStatus } from "../../src/lib/domain-date";
-import { listDomains } from "../../src/server/domains";
-import { methodNotAllowed } from "../../src/server/http";
-import { withAuthenticatedApi } from "../../src/server/auth";
+import { getCairoToday, getDomainDateStatus } from "../../src/lib/domain-date.js";
+import { listDomains } from "../../src/server/domains.js";
+import { methodNotAllowed } from "../../src/server/http.js";
+import { withAuthenticatedApi } from "../../src/server/auth.js";
 
 async function handler(request: Request): Promise<Response> {
   if (request.method !== "GET") {

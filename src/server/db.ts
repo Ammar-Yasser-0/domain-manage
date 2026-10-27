@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { ApiError } from "./http";
+import { ApiError } from "./http.js";
 
 type NeonHttpClient = ReturnType<typeof neon>;
 

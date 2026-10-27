@@ -1,4 +1,4 @@
-import { isDateOnly } from "./domain-date";
+import { isDateOnly } from "./domain-date.js";
 import type { DomainInput } from "../types/domain";
 
 export type ValidationResult<T> =

@@ -1,7 +1,7 @@
 import { createHmac } from "node:crypto";
 import { isIP } from "node:net";
-import { ApiError } from "./http";
-import { getSql } from "./db";
+import { ApiError } from "./http.js";
+import { getSql } from "./db.js";
 
 export const LOGIN_RATE_LIMIT = 10;
 export const LOGIN_RATE_WINDOW_SECONDS = 15 * 60;

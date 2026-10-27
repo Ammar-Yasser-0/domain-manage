@@ -1,9 +1,9 @@
-import { assertSameOrigin, clearSessionCookie } from "../../src/server/auth";
+import { assertSameOrigin, clearSessionCookie } from "../../src/server/auth.js";
 import {
   jsonResponse,
   methodNotAllowed,
   withApiErrors,
-} from "../../src/server/http";
+} from "../../src/server/http.js";
 
 async function handler(request: Request): Promise<Response> {
   if (request.method !== "POST") {
