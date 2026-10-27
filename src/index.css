@@ -163,6 +163,26 @@ a {
   padding: 5px 0;
 }
 
+.logout-button {
+  gap: 8px;
+  border-radius: 9px;
+  color: #e7f0f6;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 620;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.logout-button:hover:not(:disabled) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.logout-button:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
 .account-avatar {
   display: grid;
   width: 38px;
@@ -1421,6 +1441,321 @@ dialog.modal--renewal {
   background: rgba(20, 70, 52, 0.08);
 }
 
+.login-shell {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  padding: 28px 20px;
+  overflow: hidden;
+  place-items: center;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(220, 238, 246, 0.74), transparent 54%),
+    linear-gradient(150deg, #f8fafc 5%, #f2f6f9 56%, #f8fafb 100%);
+}
+
+.login-orb {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border: 1px solid rgba(108, 179, 191, 0.11);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-orb::before,
+.login-orb::after {
+  position: absolute;
+  inset: 28px;
+  border: 1px solid rgba(108, 179, 191, 0.09);
+  border-radius: 50%;
+  content: "";
+}
+
+.login-orb::after {
+  inset: 62px;
+}
+
+.login-orb--one {
+  top: -220px;
+  left: -170px;
+}
+
+.login-orb--two {
+  right: -208px;
+  bottom: -210px;
+  width: 460px;
+  height: 460px;
+}
+
+.login-card {
+  position: relative;
+  width: min(100%, 430px);
+  padding: 34px 36px 25px;
+  border: 1px solid #e5ebf1;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 28px 75px rgba(24, 47, 70, 0.1),
+    0 3px 10px rgba(24, 47, 70, 0.035);
+  backdrop-filter: blur(10px);
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 27px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.login-brand-icon {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 14px;
+  color: #17a99c;
+  background: #eaf8f5;
+}
+
+.login-brand > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.login-brand strong {
+  color: #14263d;
+  font-size: 21px;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+
+.login-brand > div > span {
+  color: #8794a6;
+  font-size: 11px;
+}
+
+.login-heading {
+  position: relative;
+  margin: 29px 0 24px;
+}
+
+.login-lock-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 17px;
+  place-items: center;
+  border: 1px solid #dcefeb;
+  border-radius: 12px;
+  color: #139b8d;
+  background: #f0faf8;
+}
+
+.login-heading .eyebrow {
+  margin-bottom: 5px;
+  font-size: 10px;
+  letter-spacing: 0.13em;
+}
+
+.login-heading h1 {
+  margin: 0;
+  color: #13243f;
+  font-size: 30px;
+  font-weight: 760;
+  letter-spacing: -0.055em;
+  line-height: 1.2;
+}
+
+.login-heading > p:last-child {
+  margin: 7px 0 0;
+  color: #73839a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-label {
+  margin-bottom: 8px;
+  color: #344761;
+  font-size: 12px;
+  font-weight: 690;
+}
+
+.login-password-field {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  border: 1px solid #dce4ec;
+  border-radius: 11px;
+  background: #ffffff;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.login-password-field:focus-within {
+  border-color: #45b9ad;
+  box-shadow: 0 0 0 3px rgba(18, 174, 157, 0.12);
+}
+
+.login-password-field input {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 2px 0 14px;
+  border: 0;
+  outline: none;
+  color: #1b2e49;
+  background: transparent;
+  font-size: 13px;
+}
+
+.login-password-field input::placeholder {
+  color: #a0aaba;
+}
+
+.login-password-field input:focus-visible {
+  outline: none;
+}
+
+.password-visibility {
+  display: grid;
+  flex: 0 0 43px;
+  width: 43px;
+  height: 42px;
+  margin-right: 4px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: #78889e;
+  background: transparent;
+  cursor: pointer;
+}
+
+.password-visibility:hover:not(:disabled) {
+  color: #2e526b;
+  background: #f2f6f8;
+}
+
+.password-visibility:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.login-submit {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 17px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.login-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.login-spinner {
+  animation: spin 1s linear infinite;
+}
+
+.login-security-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 22px;
+  color: #8290a0;
+  font-size: 10px;
+}
+
+.login-security-note svg {
+  color: #32a18d;
+}
+
+.login-notice,
+.login-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: -7px 0 18px;
+  padding: 10px 11px;
+  border: 1px solid #f0d5d5;
+  border-radius: 9px;
+  color: #a44343;
+  background: #fff7f6;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.login-notice {
+  border-color: #f1e2be;
+  color: #805a19;
+  background: #fffbf1;
+}
+
+.login-notice svg,
+.login-error svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.login-notice svg {
+  color: #c58b18;
+}
+
+.login-error--field {
+  margin: 8px 0 0;
+  padding: 0;
+  border: 0;
+  color: #b3333b;
+  background: transparent;
+}
+
+.login-footer {
+  position: absolute;
+  right: 20px;
+  bottom: 14px;
+  left: 20px;
+  margin: 0;
+  color: #98a3b2;
+  font-size: 10px;
+  text-align: center;
+}
+
+.login-loading {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: #6f8095;
+  background: #f6f9fb;
+}
+
+.login-loading .login-brand-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+}
+
+.login-loading > svg {
+  color: #17a99c;
+}
+
+.login-loading p {
+  margin: 0;
+  font-size: 13px;
+}
+
 @keyframes shimmer {
   to {
     background-position-x: -200%;
@@ -1599,6 +1934,16 @@ dialog.modal--renewal {
   .workspace-badge span,
   .workspace-badge > svg:last-child,
   .topbar-divider {
+    display: none;
+  }
+
+  .logout-button {
+    min-width: 38px;
+    min-height: 38px;
+    justify-content: center;
+  }
+
+  .logout-button span {
     display: none;
   }
 
@@ -2017,5 +2362,33 @@ dialog.modal--renewal {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-shell {
+    min-height: 100svh;
+    padding: 18px 14px 50px;
+  }
+
+  .login-card {
+    padding: 27px 23px 21px;
+    border-radius: 18px;
+  }
+
+  .login-brand {
+    padding-bottom: 22px;
+  }
+
+  .login-heading {
+    margin-top: 25px;
+  }
+
+  .login-heading h1 {
+    font-size: 28px;
+  }
+
+  .login-footer {
+    bottom: 15px;
   }
 }

@@ -1,6 +1,7 @@
 import { getCairoToday, getDomainDateStatus } from "../../src/lib/domain-date";
 import { listDomains } from "../../src/server/domains";
-import { methodNotAllowed, withApiErrors } from "../../src/server/http";
+import { methodNotAllowed } from "../../src/server/http";
+import { withAuthenticatedApi } from "../../src/server/auth";
 
 async function handler(request: Request): Promise<Response> {
   if (request.method !== "GET") {
@@ -46,4 +47,4 @@ function quoteCsv(value: string): string {
   return '"' + value.replaceAll('"', '""') + '"';
 }
 
-export default { fetch: withApiErrors(handler) };
+export default { fetch: withAuthenticatedApi(handler) };

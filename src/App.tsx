@@ -5,15 +5,20 @@ import {
   Clock3,
   Globe2,
   LockKeyhole,
+  LogOut,
+  LoaderCircle,
   Plus,
   ShieldCheck,
   TriangleAlert,
-  UserRound,
 } from "lucide-react";
 import {
   createDomain,
   deleteDomain,
+  downloadDomainsCsv,
+  getSessionStatus,
   getDomains,
+  login,
+  logout,
   renewDomain,
   updateDomain,
 } from "./lib/api";
@@ -29,6 +34,7 @@ import { DeleteDomainDialog } from "./components/DeleteDomainDialog";
 import { DomainFormDialog } from "./components/DomainFormDialog";
 import { DomainTable } from "./components/DomainTable";
 import { HistoryDialog } from "./components/HistoryDialog";
+import { LoginPage } from "./components/LoginPage";
 import { RenewalDialog } from "./components/RenewalDialog";
 import { StatCard } from "./components/StatCard";
 import { Toast, type ToastMessage } from "./components/Toast";
@@ -42,6 +48,11 @@ type DialogState =
   | null;
 
 export default function App() {
+  const [authState, setAuthState] = useState<
+    "checking" | "unauthenticated" | "authenticated" | "unconfigured" | "unavailable"
+  >("checking");
+  const [loginNotice, setLoginNotice] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
   const [domains, setDomains] = useState<DomainRecord[]>([]);
   const [today, setToday] = useState<DateOnly>(() => getCairoToday());
   const [loading, setLoading] = useState(true);
@@ -78,8 +89,76 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    void loadDomains(true);
-  }, [loadDomains]);
+    let active = true;
+
+    void getSessionStatus()
+      .then((status) => {
+        if (!active) {
+          return;
+        }
+
+        setAuthState(
+          !status.configured
+            ? "unconfigured"
+            : status.authenticated
+              ? "authenticated"
+              : "unauthenticated",
+        );
+      })
+      .catch(() => {
+        if (active) {
+          setAuthState("unavailable");
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (authState === "authenticated") {
+      void loadDomains(true);
+    }
+  }, [authState, loadDomains]);
+
+  useEffect(() => {
+    function handleExpiredSession() {
+      setAuthState("unauthenticated");
+      setDomains([]);
+      setDialog(null);
+      setHasLoaded(false);
+      setLoginNotice("Your session expired. Sign in again to continue.");
+      setToast(null);
+    }
+
+    window.addEventListener("domainflow:auth-expired", handleExpiredSession);
+    return () => window.removeEventListener("domainflow:auth-expired", handleExpiredSession);
+  }, []);
+
+  useEffect(() => {
+    if (authState !== "authenticated") {
+      return;
+    }
+
+    function verifyCurrentSession() {
+      void getSessionStatus()
+        .then((status) => {
+          if (!status.authenticated) {
+            window.dispatchEvent(new CustomEvent("domainflow:auth-expired"));
+          }
+        })
+        .catch(() => undefined);
+    }
+
+    const interval = window.setInterval(verifyCurrentSession, 60_000);
+    window.addEventListener("focus", verifyCurrentSession);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", verifyCurrentSession);
+    };
+  }, [authState]);
 
   useEffect(() => {
     if (!toast) {
@@ -158,6 +237,80 @@ export default function App() {
     setFilter(nextFilter);
   }
 
+  async function handleLogin(password: string) {
+    await login(password);
+    setLoginNotice("");
+    setDomains([]);
+    setHasLoaded(false);
+    setAuthState("authenticated");
+  }
+
+  async function handleLogout() {
+    if (loggingOut) {
+      return;
+    }
+
+    setLoggingOut(true);
+
+    try {
+      await logout();
+      setDomains([]);
+      setHasLoaded(false);
+      setDialog(null);
+      setToast(null);
+      setLoginNotice("");
+      setAuthState("unauthenticated");
+    } catch (error) {
+      setToast({
+        kind: "error",
+        text: error instanceof Error ? error.message : "Could not log out. Please try again.",
+      });
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
+  async function handleExport() {
+    try {
+      const csv = await downloadDomainsCsv();
+      const url = URL.createObjectURL(csv);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "domainflow-domains.csv";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      setToast({
+        kind: "error",
+        text: error instanceof Error ? error.message : "Could not download the export.",
+      });
+    }
+  }
+
+  if (authState !== "authenticated") {
+    if (authState === "checking") {
+      return (
+        <main className="login-loading" aria-live="polite">
+          <span className="login-brand-icon">
+            <Globe2 size={29} strokeWidth={1.8} aria-hidden="true" />
+          </span>
+          <LoaderCircle className="login-spinner" size={22} aria-hidden="true" />
+          <p>Opening your private workspace…</p>
+        </main>
+      );
+    }
+
+    return (
+      <LoginPage
+        configured={authState !== "unconfigured"}
+        notice={loginNotice || (authState === "unavailable" ? "Could not check your session. You can still try signing in." : "")}
+        onLogin={handleLogin}
+      />
+    );
+  }
+
   const statValue = (value: number) => (hasLoaded ? value : "—");
 
   return (
@@ -180,15 +333,21 @@ export default function App() {
             <ChevronDown size={16} aria-hidden="true" />
           </div>
           <span aria-hidden="true" className="topbar-divider" />
-          <div
-            aria-label="Access managed by Vercel Authentication"
-            className="account-display"
-            title="Access managed by Vercel Authentication"
+          <button
+            aria-label="Log out of DomainFlow"
+            className="account-display logout-button"
+            disabled={loggingOut}
+            onClick={() => void handleLogout()}
+            title="Log out"
+            type="button"
           >
-            <span className="account-avatar">
-              <UserRound size={19} aria-hidden="true" />
-            </span>
-          </div>
+            {loggingOut ? (
+              <LoaderCircle className="login-spinner" size={18} aria-hidden="true" />
+            ) : (
+              <LogOut size={18} aria-hidden="true" />
+            )}
+            <span>Log out</span>
+          </button>
         </div>
       </header>
 
@@ -258,6 +417,7 @@ export default function App() {
           onAdd={() => setDialog({ type: "form", mode: "add" })}
           onDelete={(domain) => setDialog({ type: "delete", domain })}
           onEdit={(domain) => setDialog({ type: "form", mode: "edit", domain })}
+          onExport={handleExport}
           onFilterChange={selectFilter}
           onHistory={(domain) => setDialog({ type: "history", domain })}
           onRenew={(domain) => setDialog({ type: "renew", domain })}

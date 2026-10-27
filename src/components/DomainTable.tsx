@@ -8,6 +8,7 @@ import {
   Download,
   Globe2,
   History,
+  LoaderCircle,
   Pencil,
   RotateCw,
   Search,
@@ -35,6 +36,7 @@ interface DomainTableProps {
   onEdit: (domain: DomainRecord) => void;
   onDelete: (domain: DomainRecord) => void;
   onHistory: (domain: DomainRecord) => void;
+  onExport: () => Promise<void>;
 }
 
 const filterOptions: Array<{ value: DomainFilter; label: string }> = [
@@ -69,9 +71,11 @@ export function DomainTable({
   onEdit,
   onDelete,
   onHistory,
+  onExport,
 }: DomainTableProps) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [exporting, setExporting] = useState(false);
   const pageSize = 5;
 
   const filteredDomains = useMemo(() => {
@@ -122,14 +126,26 @@ export function DomainTable({
               </button>
             ))}
           </nav>
-          <a
+          <button
             className="button button--secondary export-button"
-            download
-            href="/api/exports/domains"
+            disabled={exporting}
+            onClick={() => {
+              if (exporting) {
+                return;
+              }
+
+              setExporting(true);
+              void onExport().finally(() => setExporting(false));
+            }}
+            type="button"
           >
-            <Download size={16} aria-hidden="true" />
-            <span>Export CSV</span>
-          </a>
+            {exporting ? (
+              <LoaderCircle className="login-spinner" size={16} aria-hidden="true" />
+            ) : (
+              <Download size={16} aria-hidden="true" />
+            )}
+            <span>{exporting ? "Exporting…" : "Export CSV"}</span>
+          </button>
         </div>
       </div>
 

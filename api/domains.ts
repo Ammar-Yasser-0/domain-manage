@@ -6,8 +6,8 @@ import {
   jsonResponse,
   methodNotAllowed,
   readJson,
-  withApiErrors,
 } from "../src/server/http";
+import { withAuthenticatedApi } from "../src/server/auth";
 
 async function handler(request: Request): Promise<Response> {
   if (request.method === "GET") {
@@ -36,4 +36,4 @@ async function handler(request: Request): Promise<Response> {
   return methodNotAllowed(["GET", "POST"]);
 }
 
-export default { fetch: withApiErrors(handler) };
+export default { fetch: withAuthenticatedApi(handler, ["POST"]) };

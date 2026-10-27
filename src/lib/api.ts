@@ -14,6 +14,11 @@ interface ApiErrorBody {
   };
 }
 
+export interface SessionStatus {
+  configured: boolean;
+  authenticated: boolean;
+}
+
 export class ApiClientError extends Error {
   constructor(
     message: string,
@@ -47,6 +52,8 @@ async function request<T>(
 
   if (!response.ok) {
     const error = (payload as ApiErrorBody | undefined)?.error;
+    notifyExpiredSession(path, response.status);
+
     throw new ApiClientError(
       error?.message ?? "The request could not be completed. Please try again.",
       response.status,
@@ -63,6 +70,52 @@ async function request<T>(
   }
 
   return payload as T;
+}
+
+export async function downloadDomainsCsv(): Promise<Blob> {
+  const path = "/api/exports/domains";
+  const response = await fetch(path, {
+    cache: "no-store",
+    credentials: "same-origin",
+  });
+
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => undefined)) as ApiErrorBody | undefined;
+    const error = payload?.error;
+    notifyExpiredSession(path, response.status);
+    throw new ApiClientError(
+      error?.message ?? "The export could not be downloaded. Please try again.",
+      response.status,
+      error?.code,
+    );
+  }
+
+  return response.blob();
+}
+
+function notifyExpiredSession(path: string, status: number): void {
+  if (
+    status === 401 &&
+    !path.startsWith("/api/auth/") &&
+    typeof window !== "undefined"
+  ) {
+    window.dispatchEvent(new CustomEvent("domainflow:auth-expired"));
+  }
+}
+
+export function getSessionStatus(): Promise<SessionStatus> {
+  return request("/api/auth/session");
+}
+
+export function login(password: string): Promise<{ authenticated: true }> {
+  return request("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ password }),
+  });
+}
+
+export function logout(): Promise<{ authenticated: false }> {
+  return request("/api/auth/logout", { method: "POST" });
 }
 
 export function getDomains(): Promise<DomainsResponse> {

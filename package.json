@@ -13,6 +13,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "auth:setup": "tsx scripts/generate-auth-secrets.ts",
     "db:migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {

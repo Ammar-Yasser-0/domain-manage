@@ -5,8 +5,8 @@ import {
   jsonResponse,
   methodNotAllowed,
   readJson,
-  withApiErrors,
 } from "../../src/server/http";
+import { withAuthenticatedApi } from "../../src/server/auth";
 
 async function handler(request: Request): Promise<Response> {
   const id = getDomainId(request);
@@ -51,4 +51,4 @@ function getDomainId(request: Request): string {
   return id;
 }
 
-export default { fetch: withApiErrors(handler) };
+export default { fetch: withAuthenticatedApi(handler, ["PUT", "DELETE"]) };

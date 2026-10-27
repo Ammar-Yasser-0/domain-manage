@@ -3,8 +3,8 @@ import {
   ApiError,
   jsonResponse,
   methodNotAllowed,
-  withApiErrors,
 } from "../../../src/server/http";
+import { withAuthenticatedApi } from "../../../src/server/auth";
 
 async function handler(request: Request): Promise<Response> {
   if (request.method !== "GET") {
@@ -21,4 +21,4 @@ async function handler(request: Request): Promise<Response> {
   return jsonResponse({ items: await listRenewalHistory(id) });
 }
 
-export default { fetch: withApiErrors(handler) };
+export default { fetch: withAuthenticatedApi(handler) };

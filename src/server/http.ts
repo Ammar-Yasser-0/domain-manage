@@ -57,7 +57,10 @@ export function withApiErrors(
   };
 }
 
-export async function readJson(request: Request): Promise<unknown> {
+export async function readJson(
+  request: Request,
+  maxBytes = 64 * 1024,
+): Promise<unknown> {
   const contentType = request.headers.get("content-type") ?? "";
 
   if (!contentType.toLowerCase().includes("application/json")) {
@@ -68,9 +71,56 @@ export async function readJson(request: Request): Promise<unknown> {
     );
   }
 
+  const declaredLength = Number(request.headers.get("content-length"));
+
+  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+    throw new ApiError(413, "BODY_TOO_LARGE", "The request body is too large.");
+  }
+
   try {
-    return await request.json();
-  } catch {
+    if (!request.body) {
+      throw new SyntaxError("The request body is empty.");
+    }
+
+    const reader = request.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let byteLength = 0;
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        byteLength += value.byteLength;
+
+        if (byteLength > maxBytes) {
+          await reader.cancel();
+          throw new ApiError(413, "BODY_TOO_LARGE", "The request body is too large.");
+        }
+
+        chunks.push(value);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+
+    const body = new Uint8Array(byteLength);
+    let offset = 0;
+
+    for (const chunk of chunks) {
+      body.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+
+    return JSON.parse(new TextDecoder().decode(body)) as unknown;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
     throw new ApiError(400, "INVALID_JSON", "The request body is not valid JSON.");
   }
 }
